@@ -17,7 +17,7 @@ const useStyles = makeStyles(theme => ({
     
 }))
 
-
+const socket = io.connect('https://mernchat7599.herokuapp.com');
 
 function Postmessage() {
     const [scope, setScope] = useState('Global Chat');
@@ -32,16 +32,19 @@ function Postmessage() {
 
 
     useEffect(() => {
-        const socket = io.connect('https://mernchat7599.herokuapp.com');
+        
         socket.on('messages', data => setNewConversation(data));
         socket.on('messages', data => setLastMessage(data));
         socket.emit('newUser',userId)
         socket.on('online',data=>{  
-            setOnlineUsers(data)    
+            setOnlineUsers(data)   
+            console.log(data);
+             
         })
 
         return () => {
             socket.emit('offline',userId)
+        
         };
         // eslint-disable-next-line 
     }, [])
@@ -54,7 +57,7 @@ function Postmessage() {
                     <Conversations  setUser={setUser} setScope={setScope} newConversation={newConversation}/>
                 </Grid>
                 <Grid item xs={6} >
-                    <ChatBox scope={scope} user={user} lastMessage={lastMessage} />
+                    <ChatBox scope={scope} user={user} lastMessage={lastMessage} socket={socket} />
                 </Grid>
                 <Grid item xs={3}>
                     <Users setUser={setUser} setScope={setScope} onlineUsers={onlineUsers}/>

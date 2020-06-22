@@ -3,7 +3,7 @@ import { Paper, TextField, makeStyles, Grid, IconButton, ListItem, ListItemAvata
 import SendIcon from '@material-ui/icons/Send';
 import ScrollToBottom from 'react-scroll-to-bottom'
 import { getGlobalMessages, sendGlobalMessages, getConversationMessages, sendConversationMessage } from '../Actions/ChatService'
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 
 const useStyles = makeStyles(theme => ({
@@ -18,10 +18,7 @@ const useStyles = makeStyles(theme => ({
         padding: theme.spacing(0, 2),
     },
     scroll: {
-        height: "75vh",
-    },
-    header:{
-        textAlign:"center"
+        height: "71vh",
     }
 }))
 
@@ -30,8 +27,13 @@ function ChatBox(props) {
 
     const [newMessage, setNewMessage] = useState('');
     const [messages, setMessages] = useState([]);
+    const [typing, setTyping] = useState("Welcome To Group Chat")
 
     const dispatch = useDispatch()
+
+    const user = useSelector(state => {
+        return state.auth.user
+    })
 
 
 
@@ -69,18 +71,46 @@ function ChatBox(props) {
         }
     };
 
+    useEffect(() => {
+        var timerId = null
+        function f() {
+            if (timerId) {
+                clearTimeout(timerId)
+            }
+
+            timerId = setTimeout(() => {
+                setTyping("Welcome To Group Chat")
+            }, 600);
+        }
+
+        props.socket.on('typing', data => {
+            setTyping(data.name.split(" ")[0] + " is Typing....")
+            f()
+        })
+        // eslint-disable-next-line  
+    }, [])
+
+
+    const handleTyping = e => {
+        // console.log(e.which);
+        if(e.key!=="Enter" && props.scope === 'Global Chat')
+            props.socket.emit('typing', user)
+    }
+
 
     const classes = useStyles()
     return (
         <Paper className={classes.root}>
             <Grid container>
                 <Grid item xs={12}>
-                    <Paper className={classes.header} >
-                        <Typography color="inherit" variant="h6">
+                    <Paper>
+                        <Typography align="center" color="inherit" variant="h6" >
                             {props.scope}
                         </Typography>
-                    </Paper>
+               { props.scope === 'Global Chat' &&<Typography align="left" color="inherit" variant="h6"  style={{textIndent:"1rem"}}>{typing}</Typography>}
+                    </Paper >
                 </Grid>
+
                 <Grid item xs={12} >
                     {messages && (
                         <List>
@@ -114,6 +144,7 @@ function ChatBox(props) {
 
                 </Grid>
 
+
                 <Grid item xs={12}>
                     <form className={classes.form} onSubmit={onSubmit}>
                         <TextField
@@ -123,7 +154,9 @@ function ChatBox(props) {
                             fullWidth
                             value={newMessage}
                             onChange={e => setNewMessage(e.target.value)}
+                            onKeyPress={handleTyping}
                         />
+
                         <IconButton type="submit">
                             <SendIcon />
                         </IconButton>

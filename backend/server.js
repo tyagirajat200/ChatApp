@@ -88,12 +88,20 @@ io.on('connection',socket=>{
   socket.on('offline',data=>{
     users=users.filter(user=>user._id!=data._id)
     io.emit('online', users);
+    console.log("Socket is disconnected..."+socket.id);
+  })
+
+  socket.on('typing', data=>{
+    socket.broadcast.emit('typing', data)
+    console.log(data);
+    
   })
 
   socket.on('disconnect', (data) => {
 
     users=users.filter(user=>user.socketId!=socket.id)
     io.emit('online', users);
+    console.log("Socket is disconnected..."+socket.id);
   })
   
 })

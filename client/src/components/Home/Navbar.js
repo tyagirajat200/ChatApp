@@ -36,7 +36,7 @@ const Navbar = () => {
 
   return (
 
-    <MDBNavbar color="default-color" dark expand="md">
+    <MDBNavbar color="default-color" dark expand="md" style={{ padding:"0 1rem" }}>
       <MDBNavbarBrand>
         <strong className="white-text">Chat</strong>
       </MDBNavbarBrand>
@@ -62,7 +62,7 @@ const Navbar = () => {
 
 
             <MDBNavItem>
-              <Avatar style={{ marginRight: "0.5rem" }} src="https://www.w3schools.com/howto/img_avatar.png"></Avatar>
+              <Avatar style={{ marginRight: "0.5rem"}} src="https://www.w3schools.com/howto/img_avatar.png"></Avatar>
             </MDBNavItem>
             <MDBNavbarBrand>
               <strong className="white-text">{user.name}</strong>
