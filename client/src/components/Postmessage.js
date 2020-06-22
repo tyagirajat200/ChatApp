@@ -32,7 +32,7 @@ function Postmessage() {
 
 
     useEffect(() => {
-        const socket = io.connect('https://mernchat7599.herokuapp.com/');
+        const socket = io.connect('https://mernchat7599.herokuapp.com');
         socket.on('messages', data => setNewConversation(data));
         socket.on('messages', data => setLastMessage(data));
         socket.emit('newUser',userId)
